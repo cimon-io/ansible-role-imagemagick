@@ -1,5 +1,5 @@
 ---
-imagemagick_version: "7.0.7-23"
+imagemagick_version: "7.0.7-24"
 
 imagemagick_configure_options: ""
 imagemagick_install_path: "/opt/imagemagick"
