@@ -1,4 +1,4 @@
-ImageMagick Ansilb Role
+ImageMagick Ansible Role
 =========
 
 Install ImageMagick from source
