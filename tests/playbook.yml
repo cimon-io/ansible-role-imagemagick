@@ -12,6 +12,5 @@
         - libraw-dev
         - libfftw3-dev
         - liblqr-1-0-dev
-        - libopenjp2-7-dev
         - libpango1.0-dev
         - libltdl-dev
