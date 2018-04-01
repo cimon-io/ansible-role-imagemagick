@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cimon-io/ansible-role-imagemagick.svg?branch=master)](https://travis-ci.org/cimon-io/ansible-role-imagemagick)
+
 ImageMagick Ansible Role
 =========
 
