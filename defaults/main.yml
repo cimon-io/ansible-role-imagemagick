@@ -4,6 +4,8 @@ imagemagick_version: "7.0.7-27"
 imagemagick_configure_options: ""
 imagemagick_install_path: "/opt/imagemagick"
 
+imagemagick_source_url: "https://www.imagemagick.org/download/releases/ImageMagick-{{ imagemagick_version }}.tar.xz"
+
 imagemagick_optional_dependencies: []
 # - libdjvulibre-dev
 # - libopenexr-dev

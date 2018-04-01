@@ -9,7 +9,7 @@
 
 - name: "get source"
   get_url:
-    url: "https://www.imagemagick.org/download/releases/ImageMagick-{{ imagemagick_version }}.tar.xz"
+    url: "{{ imagemagick_source_url }}"
     dest: "/usr/local/src/ImageMagick-{{ imagemagick_version }}.tar.xz"
   tags: imagemagick
 
@@ -55,8 +55,9 @@
 - name: "get binaries"
   find:
     file_type: link
-    paths: "{{ imagemagick_install_path}}/bin/"
+    paths: "{{ imagemagick_install_path }}/bin/"
   register: imagemagick_binaries
+  tags: imagemagick
 
 - name: "add binaries to /usr/bin"
   alternatives:
@@ -64,3 +65,4 @@
     path: "{{ item.path }}"
     link: "/usr/bin/{{ item.path | basename }}"
   with_items: "{{ imagemagick_binaries.files }}"
+  tags: imagemagick
