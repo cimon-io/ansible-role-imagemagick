@@ -1,10 +1,11 @@
 ---
-imagemagick_version: "7.0.7-28"
+imagemagick_version: "7.0.7"
 
 imagemagick_configure_options: ""
 imagemagick_install_path: "/opt/imagemagick"
+imagemagick_source_path: "/usr/local/src"
 
-imagemagick_source_url: "https://www.imagemagick.org/download/releases/ImageMagick-{{ imagemagick_version }}.tar.xz"
+imagemagick_releases_url: "https://www.imagemagick.org/download/releases"
 
 imagemagick_optional_dependencies: []
 # - libdjvulibre-dev
