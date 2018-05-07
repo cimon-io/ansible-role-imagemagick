@@ -2,8 +2,6 @@
 ansible_become: yes
 apt_cache_valid_time: 86400
 
-imagemagick_source_path: "/usr/local/src/ImageMagick-{{ imagemagick_version }}"
-
 imagemagick_dependencies:
   - build-essential
   - libpng-dev
