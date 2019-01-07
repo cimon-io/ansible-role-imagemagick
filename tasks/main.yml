@@ -14,11 +14,13 @@
   register: imagemagick_releases_page
   tags: imagemagick
 
-- set_fact:
+- name: "set vars: IM patch version"
+  set_fact:
     imagemagick_patch_version: "{{ imagemagick_releases_page.content | regex_search('ImageMagick-'+imagemagick_version+'-[0-9]{1,3}.tar.xz') | regex_replace('^.*-(.*)\\.tar\\.xz','\\1') }}"
   tags: imagemagick
 
-- set_fact:
+- name: "set vars: IM filename"
+  set_fact:
     imagemagick_file: "ImageMagick-{{ imagemagick_version + '-' + imagemagick_patch_version }}"
   tags: imagemagick
 
@@ -30,13 +32,13 @@
 
 - name: "install dependencies"
   apt:
-    name: "{{ item }}"
+    name: "{{ imagemagick_dependencies + imagemagick_optional_dependencies }}"
     state: present
     update_cache: yes
     cache_valid_time: "{{ apt_cache_valid_time }}"
-  with_items:
-    - "{{ imagemagick_dependencies }}"
-    - "{{ imagemagick_optional_dependencies }}"
+  retries: "{{ remote_package_retries }}"
+  register: apt_result
+  until: apt_result is succeeded
   tags: imagemagick
 
 - name: "extract archive"
