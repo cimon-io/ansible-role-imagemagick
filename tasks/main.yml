@@ -71,8 +71,10 @@
 
 - name: "get binaries"
   find:
-    file_type: link
+    file_type: any
     paths: "{{ imagemagick_install_path }}/bin/"
+    patterns: "^[a-z]+"
+    use_regex: yes
   register: imagemagick_binaries
   tags: imagemagick
 
