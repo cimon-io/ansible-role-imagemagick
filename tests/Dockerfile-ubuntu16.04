@@ -1,0 +1,18 @@
+FROM ubuntu:16.04
+
+ARG ANSIBLE_VERSION="2.7.10"
+ARG IMAGEMAGICK_VERSION="7.0.8"
+
+RUN apt-get update -qq && \
+    apt-get install -qq sudo python-apt python-pycurl python-pip python-dev \
+                        python-passlib libffi-dev && \
+    pip install -U setuptools && \
+    pip install -q ansible==${ANSIBLE_VERSION}
+
+WORKDIR /tmp/ansible-role-imagemagick
+COPY  .  /tmp/ansible-role-imagemagick
+
+RUN echo "localhost" > inventory
+RUN ansible-playbook -i inventory -c local tests/playbook.yml --syntax-check
+RUN ansible-playbook -i inventory -c local tests/playbook.yml -e imagemagick_version=${IMAGEMAGICK_VERSION}
+RUN identify -version

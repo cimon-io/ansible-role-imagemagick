@@ -3,20 +3,21 @@ language: python
 python: "2.7"
 
 sudo: required
+dist: trusty
+services:
+- docker
 
-addons:
-  apt:
-    packages:
-    - python-pip
-
-install:
-  - pip install ansible
-  - ansible --version
+env:
+  matrix:
+    - IMAGE_NAME="ubuntu16.04" ANSIBLE_VERSION="2.7.10" IMAGEMAGICK_VERSION="6.9.8"
+    - IMAGE_NAME="ubuntu18.04" ANSIBLE_VERSION="2.7.10" IMAGEMAGICK_VERSION="7.0.8"
+    - IMAGE_NAME="debian9" ANSIBLE_VERSION="2.7.10" IMAGEMAGICK_VERSION="7.0.8"
+    - IMAGE_NAME="ubuntu16.04" ANSIBLE_VERSION="2.5.9" IMAGEMAGICK_VERSION="7.0.8"
+    - IMAGE_NAME="ubuntu18.04" ANSIBLE_VERSION="2.5.9" IMAGEMAGICK_VERSION="6.9.8"
+    - IMAGE_NAME="debian9" ANSIBLE_VERSION="2.5.9" IMAGEMAGICK_VERSION="7.0.8"
 
 script:
-  - echo -ne '[cimon-ansible]\nlocalhost ansible_connection=local' > inventory
-  - ansible-playbook tests/playbook.yml -i inventory --syntax-check
-  - ansible-playbook tests/playbook.yml -i inventory
+  - docker build -t $IMAGE_NAME --build-arg IMAGEMAGICK_VERSION=${IMAGEMAGICK_VERSION} --build-arg ANSIBLE_VERSION=${ANSIBLE_VERSION} -f tests/Dockerfile-$IMAGE_NAME .
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
