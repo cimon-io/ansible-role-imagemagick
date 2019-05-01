@@ -1,0 +1,18 @@
+FROM debian:9
+
+ARG ANSIBLE_VERSION="2.7.10"
+ARG IMAGEMAGICK_VERSION="7.0.8"
+
+RUN apt-get update -qq && \
+    apt-get install -qq sudo python3-apt python3-pycurl python3-pip python3-dev \
+                        python3-passlib libffi-dev && \
+    pip3 install -U setuptools && \
+    pip3 install -q ansible==${ANSIBLE_VERSION}
+
+WORKDIR /tmp/ansible-role-imagemagick
+COPY  .  /tmp/ansible-role-imagemagick
+
+RUN echo "localhost ansible_python_interpreter=/usr/bin/python3" > inventory
+RUN ansible-playbook -i inventory -c local tests/playbook.yml --syntax-check
+RUN ansible-playbook -i inventory -c local tests/playbook.yml -e imagemagick_version=${IMAGEMAGICK_VERSION}
+RUN identify -version
