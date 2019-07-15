@@ -6,7 +6,7 @@ ARG IMAGEMAGICK_VERSION="7.0.8"
 RUN apt-get update -qq && \
     apt-get install -qq sudo python3-apt python3-pycurl python3-pip python3-dev \
                         python3-passlib libffi-dev && \
-    pip3 install -U setuptools && \
+    pip3 install -U setuptools paramiko && \
     pip3 install -q ansible==${ANSIBLE_VERSION}
 
 WORKDIR /tmp/ansible-role-imagemagick
