@@ -1,13 +1,12 @@
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
-ARG ANSIBLE_VERSION="2.7.10"
-ARG IMAGEMAGICK_VERSION="7.0.8"
+ARG ANSIBLE_VERSION="2.10.4"
+ARG IMAGEMAGICK_VERSION="7.0.11"
 
 RUN apt-get update -qq && \
-    apt-get install -qq sudo python-apt python-pycurl python-pip python-dev \
-                        python-passlib libffi-dev && \
-    pip install -U setuptools && \
-    pip install -q ansible==${ANSIBLE_VERSION}
+    apt-get install -qq sudo python3-apt python3-pycurl python3-pip python3-dev libffi-dev && \
+    pip3 install -U setuptools paramiko && \
+    pip3 install -q ansible==${ANSIBLE_VERSION}
 
 WORKDIR /tmp/ansible-role-imagemagick
 COPY  .  /tmp/ansible-role-imagemagick
