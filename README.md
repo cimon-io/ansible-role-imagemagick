@@ -33,6 +33,7 @@ Example Playbook
 
 ```
 - hosts: servers
+  become: true
   roles:
     - { role: cimon-io.imagemagick, imagemagick_version: '7.0.7' }
 ```
