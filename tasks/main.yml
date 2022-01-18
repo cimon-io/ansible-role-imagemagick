@@ -16,7 +16,7 @@
 
 - name: "set vars: IM patch version"
   set_fact:
-    imagemagick_patch_version: "{{ imagemagick_releases_page.content | regex_search('ImageMagick-'+imagemagick_version+'-[0-9]{1,3}.tar.xz') | regex_replace('^.*-(.*)\\.tar\\.xz','\\1') }}"
+    imagemagick_patch_version: "{{ imagemagick_releases_page.content | regex_findall('ImageMagick-'+imagemagick_version+'-[0-9]{1,3}.tar.xz') | last | regex_replace('^.*-(.*)\\.tar\\.xz','\\1') }}"
   tags: imagemagick
 
 - name: "set vars: IM filename"
