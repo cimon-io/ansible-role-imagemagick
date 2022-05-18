@@ -34,7 +34,7 @@ Example Playbook
 ```
 - hosts: servers
   roles:
-    - { role: cimon-io.imagemagick, imagemagick_version: '7.1.0"' }
+    - { role: cimon-io.imagemagick, imagemagick_version: '7.1.0' }
 ```
 
 License
