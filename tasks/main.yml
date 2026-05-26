@@ -32,6 +32,12 @@
     dest: "/usr/local/src/{{ imagemagick_file }}.tar.xz"
   tags: imagemagick
 
+- name: "check source archive exists"
+  stat:
+    path: "/usr/local/src/{{ imagemagick_file }}.tar.xz"
+  register: imagemagick_source_tar
+  tags: imagemagick
+
 - name: "install dependencies"
   apt:
     name: "{{ imagemagick_dependencies + imagemagick_optional_dependencies }}"
@@ -49,6 +55,7 @@
     dest: "/usr/local/src/"
     copy: no
     creates: "{{ imagemagick_source_path }}/{{ imagemagick_file }}"
+  when: not ansible_check_mode or imagemagick_source_tar.stat.exists
   tags: imagemagick
 
 - name: "configure"
@@ -56,6 +63,7 @@
   args:
     chdir: "{{ imagemagick_source_path }}/{{ imagemagick_file }}"
     creates: "{{ imagemagick_source_path }}/{{ imagemagick_file }}/config.status"
+  when: not ansible_check_mode or imagemagick_source_tar.stat.exists
   tags: imagemagick
 
 - name: "build"
@@ -63,6 +71,7 @@
   args:
     chdir: "{{ imagemagick_source_path }}/{{ imagemagick_file }}"
     creates: "{{ imagemagick_source_path }}/{{ imagemagick_file }}/utilities/.libs"
+  when: not ansible_check_mode or imagemagick_source_tar.stat.exists
   tags: imagemagick
 
 - name: "check installed version"
