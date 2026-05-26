@@ -12,6 +12,8 @@
     url: "{{ imagemagick_releases_url }}"
     return_content: yes
   register: imagemagick_releases_page
+  # Uri module doesn't support check mode, but this task is required to determine the latest patch version of ImageMagick to install.
+  check_mode: false
   tags: imagemagick
 
 - name: "set vars: IM patch version"
@@ -60,13 +62,23 @@
   command: "make -j{{ ansible_processor_cores|default(1) }}"
   args:
     chdir: "{{ imagemagick_source_path }}/{{ imagemagick_file }}"
-    creates: "{{ imagemagick_source_path }}/{{ imagemagick_file }}/utilites/.libs"
+    creates: "{{ imagemagick_source_path }}/{{ imagemagick_file }}/utilities/.libs"
+  tags: imagemagick
+
+- name: "check installed version"
+  command: "{{ imagemagick_install_path }}/bin/magick --version"
+  register: imagemagick_installed_version
+  changed_when: false
+  failed_when: false
   tags: imagemagick
 
 - name: "install"
   command: "make install"
   args:
     chdir: "{{ imagemagick_source_path }}/{{ imagemagick_file }}"
+  when: >
+    imagemagick_installed_version.rc != 0 or
+    imagemagick_version + '-' + imagemagick_patch_version not in imagemagick_installed_version.stdout
   tags: imagemagick
 
 - name: "get binaries"
