@@ -70,6 +70,18 @@
   register: imagemagick_installed_version
   changed_when: false
   failed_when: false
+  check_mode: false
+  tags: imagemagick
+
+- name: "install ImageMagick would be required"
+  debug:
+    msg: "ImageMagick would be installed or upgraded"
+  changed_when: true
+  when: >
+    ansible_check_mode and (
+      imagemagick_installed_version.rc != 0 or
+      imagemagick_version + '-' + imagemagick_patch_version not in imagemagick_installed_version.stdout
+    )
   tags: imagemagick
 
 - name: "install"
@@ -77,8 +89,10 @@
   args:
     chdir: "{{ imagemagick_source_path }}/{{ imagemagick_file }}"
   when: >
-    imagemagick_installed_version.rc != 0 or
-    imagemagick_version + '-' + imagemagick_patch_version not in imagemagick_installed_version.stdout
+    not ansible_check_mode and (
+      imagemagick_installed_version.rc != 0 or
+      imagemagick_version + '-' + imagemagick_patch_version not in imagemagick_installed_version.stdout
+    )
   tags: imagemagick
 
 - name: "get binaries"
