@@ -12,6 +12,8 @@
     url: "{{ imagemagick_releases_url }}"
     return_content: yes
   register: imagemagick_releases_page
+  # Uri module doesn't support check mode, but this task is required to determine the latest patch version of ImageMagick to install.
+  check_mode: false
   tags: imagemagick
 
 - name: "set vars: IM patch version"
@@ -28,6 +30,12 @@
   get_url:
     url: "{{ imagemagick_releases_url }}/{{ imagemagick_file }}.tar.xz"
     dest: "/usr/local/src/{{ imagemagick_file }}.tar.xz"
+  tags: imagemagick
+
+- name: "check source archive exists"
+  stat:
+    path: "/usr/local/src/{{ imagemagick_file }}.tar.xz"
+  register: imagemagick_source_tar
   tags: imagemagick
 
 - name: "install dependencies"
@@ -47,6 +55,7 @@
     dest: "/usr/local/src/"
     copy: no
     creates: "{{ imagemagick_source_path }}/{{ imagemagick_file }}"
+  when: not ansible_check_mode or imagemagick_source_tar.stat.exists
   tags: imagemagick
 
 - name: "configure"
@@ -54,19 +63,45 @@
   args:
     chdir: "{{ imagemagick_source_path }}/{{ imagemagick_file }}"
     creates: "{{ imagemagick_source_path }}/{{ imagemagick_file }}/config.status"
+  when: not ansible_check_mode or imagemagick_source_tar.stat.exists
   tags: imagemagick
 
 - name: "build"
   command: "make -j{{ ansible_processor_cores|default(1) }}"
   args:
     chdir: "{{ imagemagick_source_path }}/{{ imagemagick_file }}"
-    creates: "{{ imagemagick_source_path }}/{{ imagemagick_file }}/utilites/.libs"
+    creates: "{{ imagemagick_source_path }}/{{ imagemagick_file }}/utilities/.libs"
+  when: not ansible_check_mode or imagemagick_source_tar.stat.exists
+  tags: imagemagick
+
+- name: "check installed version"
+  command: "{{ imagemagick_install_path }}/bin/magick --version"
+  register: imagemagick_installed_version
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  tags: imagemagick
+
+- name: "install ImageMagick would be required"
+  debug:
+    msg: "ImageMagick would be installed or upgraded"
+  changed_when: true
+  when: >
+    ansible_check_mode and (
+      imagemagick_installed_version.rc != 0 or
+      imagemagick_version + '-' + imagemagick_patch_version not in imagemagick_installed_version.stdout
+    )
   tags: imagemagick
 
 - name: "install"
   command: "make install"
   args:
     chdir: "{{ imagemagick_source_path }}/{{ imagemagick_file }}"
+  when: >
+    not ansible_check_mode and (
+      imagemagick_installed_version.rc != 0 or
+      imagemagick_version + '-' + imagemagick_patch_version not in imagemagick_installed_version.stdout
+    )
   tags: imagemagick
 
 - name: "get binaries"
